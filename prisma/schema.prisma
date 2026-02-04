@@ -1,0 +1,87 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Modèle Produit
+model Product {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  price       Float
+  image       String
+  rating      Float    @default(0)
+  reviewCount Int      @default(0)
+  
+  // Relations
+  category    Category @relation(fields: [categoryId], references: [id])
+  categoryId  Int
+  
+  cartItems   CartItem[]
+  orderItems  OrderItem[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Modèle Catégorie
+model Category {
+  id       Int       @id @default(autoincrement())
+  name     String    @unique
+  products Product[] // Une catégorie a plusieurs produits
+}
+
+// Modèle Panier (Persistant)
+model Cart {
+  id        String     @id @default(uuid()) // UUID unique pour le cookie session
+  items     CartItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+// Articles dans le panier (Table de liaison)
+model CartItem {
+  id        Int      @id @default(autoincrement())
+  quantity  Int
+  
+  // Liaison au Panier
+  cart      Cart     @relation(fields: [cartId], references: [id])
+  cartId    String
+  
+  // Liaison au Produit
+  product   Product  @relation(fields: [productId], references: [id])
+  productId Int
+
+  @@unique([cartId, productId]) // Un produit ne peut apparaître qu'une fois par panier (on augmente la qté sinon)
+}
+// Modèle Commande
+model Order {
+  id          Int         @id @default(autoincrement())
+  totalAmount Float
+  status      String      @default("En attente") // ex: En attente, Expédiée, Livrée
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  // Liaison aux articles de la commande
+  items       OrderItem[]
+}
+
+// Articles contenus dans une commande
+model OrderItem {
+  id        Int     @id @default(autoincrement())
+  quantity  Int
+  price     Float   // On stocke le prix au moment de l'achat
+
+  // Liaison à la commande
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId   Int
+
+  // Liaison au produit
+  product   Product @relation(fields: [productId], references: [id])
+  productId Int
+}
