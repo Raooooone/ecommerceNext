@@ -1,65 +1,111 @@
 'use server'
+import { prisma } from '@/app/lib/prisma'
+import { revalidatePath } from 'next/cache'
+import { redirect } from 'next/navigation'
 
-import { prisma } from '@/app/lib/prisma';
-import { revalidatePath } from 'next/cache';
-import { redirect } from 'next/navigation';
-
-// CREATE
 export async function createProduct(formData) {
-  const title = formData.get('title');
-  const price = parseFloat(formData.get('price'));
-  const description = formData.get('description');
-  const categoryId = parseInt(formData.get('categoryId'));
-  
-  // ICI : On récupère simplement l'URL comme du texte
-  const image = formData.get('image'); 
+  try {
+    const title = formData.get('title') //Récupère les valeurs envoyées par le formulaire HTML
+    const price = formData.get('price')
+    const description = formData.get('description')
+    const categoryId = formData.get('categoryId')
+    const image = formData.get('image')
 
-  await prisma.product.create({
-    data: {
-      title,
-      price,
-      description,
-      image, // On sauvegarde l'URL directement (ex: "https://google.com/image.jpg")
-      categoryId,
-      rating: 0,
-      reviewCount: 0
+    if (!title || !price || !categoryId) {
+      throw new Error("Les champs Titre, Prix et Catégorie sont obligatoires.")
+    }// Empêche l’envoi de données vides et sécurité serveur
+
+    //validation des types 
+    const parsedPrice = parseFloat(price) 
+    const parsedCategoryId = parseInt(categoryId)
+
+    if (isNaN(parsedPrice) || parsedPrice <= 0) {
+      throw new Error("Le prix doit être un nombre valide supérieur à 0.")// Prix valide et positif
     }
-  });
 
-  revalidatePath('/products/manage');
-  redirect('/products/manage');
+    if (isNaN(parsedCategoryId)) {
+      throw new Error("La catégorie sélectionnée est invalide.")//Catégorie valide
+    }
+
+    await prisma.product.create({ //Crée un nouveau produit dans la table product
+      data: {
+        title: title.trim(),
+        price: parsedPrice,
+        description: description?.trim() || '',
+        image: image || '', 
+        categoryId: parsedCategoryId
+      }
+    })
+
+  } catch (error) {
+    console.error("Erreur Create:", error)
+    redirect(`/error?message=${encodeURIComponent(error.message)}`)
+  }
+
+  revalidatePath('/products/manage')
+  redirect('/products/manage')
 }
 
-// UPDATE
+
 export async function updateProduct(formData) {
-  const id = parseInt(formData.get('id'));
-  const title = formData.get('title');
-  const price = parseFloat(formData.get('price'));
-  const description = formData.get('description');
-  const categoryId = parseInt(formData.get('categoryId'));
-  
-  // ICI AUSSI : On récupère l'URL texte
-  const image = formData.get('image');
-
-  await prisma.product.update({
-    where: { id },
-    data: {
-      title,
-      price,
-      description,
-      image,
-      categoryId
+  try {
+    const id = parseInt(formData.get('id'))
+    if (!id || isNaN(id)) {
+      throw new Error("Identifiant du produit manquant ou invalide.")
     }
-  });
 
-  revalidatePath('/products/manage');
-  revalidatePath(`/products/${id}`);
-  redirect('/products/manage');
+    const title = formData.get('title')
+    const price = formData.get('price')
+    const description = formData.get('description')
+    const categoryId = formData.get('categoryId')
+    const image = formData.get('image')
+
+    if (!title || !price || !categoryId) {
+      throw new Error("Les champs Titre, Prix et Catégorie ne peuvent pas être vides.")
+    }
+
+    const parsedPrice = parseFloat(price)
+    const parsedCategoryId = parseInt(categoryId)
+
+    if (isNaN(parsedPrice) || parsedPrice <= 0) {
+      throw new Error("Le prix doit être valide.")
+    }
+
+    await prisma.product.update({
+      where: { id },
+      data: {
+        title: title.trim(),
+        price: parsedPrice,
+        description: description?.trim() || '',
+        image: image || '',
+        categoryId: parsedCategoryId
+      }
+    })
+
+  } catch (error) {
+    console.error("Erreur Update:", error)
+    redirect(`/error?message=${encodeURIComponent(error.message)}`)
+  }
+
+  revalidatePath('/products/manage')
+  revalidatePath(`/products/${formData.get('id')}`) 
+  redirect('/products/manage')
 }
 
-// DELETE
+
 export async function deleteProduct(formData) {
-  const id = parseInt(formData.get('id'));
-  await prisma.product.delete({ where: { id } });
-  revalidatePath('/products/manage');
+  try {
+    const id = parseInt(formData.get('id'))
+    if (!id || isNaN(id)) {
+      throw new Error("Impossible de supprimer : ID invalide.")
+    }
+
+    await prisma.product.delete({ where: { id } })
+
+  } catch (error) {
+    console.error("Erreur Delete:", error)
+    redirect(`/error?message=${encodeURIComponent(error.message)}`)
+  }
+
+  revalidatePath('/products/manage')
 }

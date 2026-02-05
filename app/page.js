@@ -1,65 +1,66 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.js file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="min-h-screen bg-white text-zinc-900">
+      {/* Hero Section */}
+      <section className="relative overflow-hidden bg-zinc-50 py-24 sm:py-32">
+        <div className="container mx-auto px-6 lg:px-8">
+          <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
+            <div>
+              <h1 className="text-5xl font-extrabold tracking-tight sm:text-7xl">
+                <span className="text-indigo-600">redéfinie</span>.
+              </h1>
+              <p className="mt-6 text-xl leading-8 text-zinc-600">
+                Découvrez notre nouvelle collection exclusive. Des produits de qualité, 
+                sélectionnés avec soin pour votre quotidien.
+              </p>
+              <div className="mt-10 flex items-center gap-x-6">
+                <Link
+                  href="/products"
+                  className="rounded-full bg-indigo-600 px-8 py-4 text-lg font-semibold text-white shadow-lg hover:bg-indigo-500 transition-all active:scale-95"
+                >
+                  Voir le catalogue
+                </Link>
+                <Link href="/about" className="text-lg font-semibold leading-6 hover:text-indigo-600 transition-colors">
+                  Notre histoire <span aria-hidden="true">→</span>
+                </Link>
+              </div>
+            </div>
+            <div className="relative">
+              <div className="aspect-square overflow-hidden rounded-3xl bg-zinc-200 shadow-2xl">
+                 <Image
+                  src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1000"
+                  alt="Produit vedette"
+                  fill
+                  className="object-cover"
+                  priority
+                />
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      {/* Feature Section (Séance 1: Architecture) */}
+      <section className="py-24">
+        <div className="container mx-auto px-6 text-center">
+          <h2 className="text-3xl font-bold">Pourquoi nous choisir ?</h2>
+          <div className="mt-16 grid grid-cols-1 gap-8 sm:grid-cols-3">
+            {[
+              { title: "Livraison Rapide", desc: "Expédié sous 24h partout en Tunisie." },
+              { title: "Paiement Sécurisé", desc: "Transaction 100% sécurisée par carte ou cash." },
+              { title: "Garantie Qualité", desc: "Satisfait ou remboursé sous 14 jours." },
+            ].map((feature, i) => (
+              <div key={i} className="rounded-2xl border border-zinc-100 p-8 shadow-sm hover:shadow-md transition-shadow">
+                <h3 className="text-xl font-semibold">{feature.title}</h3>
+                <p className="mt-4 text-zinc-500">{feature.desc}</p>
+              </div>
+            ))}
+          </div>
         </div>
-      </main>
+      </section>
     </div>
   );
 }

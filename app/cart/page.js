@@ -4,13 +4,11 @@ import { useState, useEffect } from 'react';
 import { globalCart } from '@/app/store'; 
 import { createOrder } from '@/app/actions/orders'; 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 
 export default function CartPage() {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const router = useRouter();
 
   useEffect(() => {
     setCartItems([...globalCart]);
@@ -18,7 +16,6 @@ export default function CartPage() {
 
   const total = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
 
-  // Fonction pour tout nettoyer (mémoire + affichage)
   const clearCart = () => {
     // eslint-disable-next-line react-hooks/immutability
     globalCart.length = 0;
@@ -27,108 +24,149 @@ export default function CartPage() {
 
   const handleCheckout = async () => {
     setLoading(true);
-    
     const result = await createOrder(cartItems, total);
-
     setLoading(false);
 
     if (result && result.success) {
-        // 1. On affiche le message de succès MAINTENANT
         setIsSuccess(true);
-        
-        // 2. On attend 3 secondes AVANT de vider le panier
         setTimeout(() => {
-            // 3. C'est ici qu'on vide le panier (après le délai)
             clearCart(); 
-
-            // 4. On cache le message de succès
-            // Cela va forcer l'affichage du composant "Votre panier est vide" juste en dessous
             setIsSuccess(false); 
-            
-            // Note : Si vous voulez rediriger ailleurs (ex: accueil), décommentez ceci :
-            // router.push('/products');
         }, 3000);
-
     } else {
-        const message = result?.message || "Erreur inconnue";
-        alert("❌ Erreur : " + message);
+        alert(" Erreur : " + (result?.message || "Erreur inconnue"));
     }
   };
 
-  // ✨ AFFICHAGE SPÉCIAL SUCCÈS
+  // --- AFFICHAGE SUCCÈS CLAIR ---
   if (isSuccess) {
     return (
-      <div className="container mx-auto px-4 py-32 text-center">
-        <div className="bg-green-100 text-green-800 p-8 rounded-lg shadow-lg inline-block max-w-lg">
-            <div className="text-6xl mb-4">🎉</div>
-            <h2 className="text-3xl font-bold mb-2">Commande validée !</h2>
-            <p className="text-lg">Votre commande a été traitée avec succès.</p>
-            <p className="text-sm mt-4 text-green-700 animate-pulse">
-                Mise à jour du panier dans quelques secondes...
+      <div className="min-h-screen bg-white flex items-center justify-center px-4">
+        <div className="text-center max-w-md w-full animate-in fade-in zoom-in duration-700">
+            <div className="w-24 h-24 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center text-5xl mx-auto mb-8 shadow-sm">
+              
+            </div>
+            <h2 className="text-4xl font-black text-zinc-900 mb-4 tracking-tight">C'est en route !</h2>
+            <p className="text-zinc-500 font-medium leading-relaxed">
+              Votre commande a été validée. Merci de faire partie de notre aventure.
             </p>
+            <div className="mt-10 h-1 w-32 bg-zinc-100 mx-auto rounded-full overflow-hidden">
+              <div className="h-full bg-blue-400 animate-[shimmer_2s_infinite]" style={{ width: '100%' }}></div>
+            </div>
         </div>
       </div>
     );
   }
 
-  // Affichage Panier Vide (Standard)
+  // --- PANIER VIDE CLAIR ---
   if (cartItems.length === 0) {
     return (
-      <div className="container mx-auto px-4 py-20 text-center">
-        <h2 className="text-2xl font-bold mb-4">Votre panier est vide 😕</h2>
-        <Link href="/products" className="text-blue-600 hover:underline">
-          Retourner au catalogue
+      <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6 text-center">
+        <div className="w-24 h-24 bg-zinc-50 rounded-full flex items-center justify-center text-4xl mb-8 border border-zinc-100">
+          
+        </div>
+        <h2 className="text-3xl font-black text-zinc-900 mb-3 tracking-tight">Le panier est vide</h2>
+        <p className="text-zinc-400 mb-10 max-w-xs font-medium">Il est temps de le remplir avec vos articles préférés !</p>
+        <Link href="/products" className="bg-blue-600 text-white px-10 py-4 rounded-full font-bold hover:bg-blue-700 transition-all shadow-xl shadow-blue-100">
+          Découvrir les produits
         </Link>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-12 max-w-4xl">
-      <h1 className="text-3xl font-bold mb-8">Mon Panier</h1>
-
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        {cartItems.map((item, index) => (
-          <div key={`${item.id}-${index}`} className="flex items-center gap-4 p-4 border-b last:border-0">
-            <div className="w-20 h-20 relative bg-gray-100 rounded overflow-hidden flex-shrink-0">
-               {item.image && (
-                 <img src={item.image} alt={item.title} className="w-full h-full object-contain" />
-               )}
-            </div>
-            <div className="flex-grow">
-              <h3 className="font-semibold text-lg">{item.title}</h3>
-              <p className="text-gray-500 text-sm">Prix : {item.price} €</p>
-              <span className={`text-xs px-2 py-1 rounded ${String(item.id).startsWith('db-') ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                {String(item.id).startsWith('db-') ? 'Stock Local' : 'Externe'}
-              </span>
-            </div>
-            <div className="flex flex-col items-center mx-4">
-               <span className="font-bold text-lg">x{item.quantity}</span>
-            </div>
-            <div className="font-bold text-blue-600 w-24 text-right">
-              {(item.price * item.quantity).toFixed(2)} €
-            </div>
+    <div className="min-h-screen bg-zinc-50/30 text-zinc-900 py-16 px-4">
+      <div className="max-w-5xl mx-auto">
+        
+        <header className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-4">
+          <div>
+            <h1 className="text-6xl font-black text-zinc-900 tracking-tighter">Panier</h1>
+            <p className="text-zinc-400 font-bold mt-2 text-sm italic">{cartItems.length} merveille(s) sélectionnée(s)</p>
           </div>
-        ))}
-
-        <div className="p-6 bg-gray-50 border-t flex flex-col md:flex-row justify-between items-center gap-4">
-          <button onClick={clearCart} className="text-red-500 text-sm hover:underline">
-            Vider le panier
+          <button onClick={clearCart} className="group text-xs font-bold uppercase tracking-widest text-zinc-300 hover:text-red-400 transition-colors">
+            Vider le panier <span className="inline-block transition-transform group-hover:rotate-12">🗑️</span>
           </button>
+        </header>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
           
-          <div className="text-right flex flex-col items-end">
-            <div className="text-xl">Total : <span className="font-bold">{total.toFixed(2)} €</span></div>
-            
-            <button 
+          {/* --- LISTE DES ARTICLES --- */}
+          <div className="lg:col-span-7 space-y-10">
+            {cartItems.map((item, index) => (
+              <div key={`${item.id}-${index}`} className="group flex flex-wrap sm:flex-nowrap items-center gap-8 pb-10 border-b border-zinc-100 last:border-0">
+                
+                {/* Image Produit */}
+                <div className="w-32 h-32 bg-white rounded-3xl overflow-hidden flex-shrink-0 p-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)] group-hover:shadow-md transition-shadow duration-500">
+                  <img src={item.image} alt={item.title} className="w-full h-full object-contain" />
+                </div>
+                
+                {/* Infos Produit */}
+                <div className="flex-grow">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="px-2 py-0.5 rounded bg-blue-50 text-blue-500 text-[10px] font-black uppercase tracking-widest">
+                      {String(item.id).startsWith('db-') ? 'Local' : 'Import'}
+                    </span>
+                  </div>
+                  <h3 className="font-bold text-zinc-900 text-xl mb-1 group-hover:text-blue-600 transition-colors">{item.title}</h3>
+                  <p className="text-zinc-400 text-sm font-medium">Prix unitaire: {item.price} €</p>
+                  
+                  <div className="mt-4 flex items-center justify-between">
+                    <div className="flex items-center gap-4 text-sm font-bold">
+                        <span className="text-zinc-300">Quantité</span>
+                        <span className="w-8 h-8 flex items-center justify-center bg-zinc-50 rounded-lg">{item.quantity}</span>
+                    </div>
+                    <span className="text-2xl font-black text-zinc-900 tracking-tighter">
+                        {(item.price * item.quantity).toFixed(2)}€
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* --- RÉSUMÉ DE CAISSE --- */}
+          <div className="lg:col-span-5">
+            <div className="bg-white p-10 rounded-[3rem] border border-zinc-100 shadow-[0_20px_50px_rgba(0,0,0,0.03)] sticky top-12">
+              <h2 className="text-2xl font-black text-zinc-900 mb-8 tracking-tight">Récapitulatif</h2>
+              
+              <div className="space-y-4 mb-10">
+                <div className="flex justify-between text-zinc-400 font-bold text-sm uppercase">
+                  <span>Articles</span>
+                  <span className="text-zinc-900">{total.toFixed(2)} €</span>
+                </div>
+                <div className="flex justify-between text-zinc-400 font-bold text-sm uppercase">
+                  <span>Livraison</span>
+                  <span className="text-green-500 tracking-widest italic">Offerte</span>
+                </div>
+                <div className="pt-8 border-t border-zinc-100 flex justify-between items-end">
+                  <span className="text-zinc-900 font-black text-xl">Total</span>
+                  <span className="text-5xl font-black tracking-tighter text-blue-600">
+                    {total.toFixed(2)}<span className="text-lg ml-1">€</span>
+                  </span>
+                </div>
+              </div>
+
+              <button 
                 onClick={handleCheckout}
                 disabled={loading}
-                className={`mt-4 text-white px-8 py-3 rounded-lg font-bold transition
-                    ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'}
+                className={`w-full py-6 rounded-full font-black text-lg transition-all active:scale-95 flex items-center justify-center gap-3
+                  ${loading ? 'bg-zinc-100 text-zinc-400 cursor-not-allowed' : 'bg-zinc-900 text-white hover:bg-blue-600 shadow-xl shadow-blue-50'}
                 `}
-            >
-              {loading ? 'Traitement...' : 'Passer la commande'}
-            </button>
+              >
+                {loading ? (
+                  <div className="w-5 h-5 border-2 border-zinc-300 border-t-zinc-900 rounded-full animate-spin" />
+                ) : (
+                  "Valider l'achat"
+                )}
+              </button>
+              
+              <div className="mt-10 flex items-center justify-center gap-6 opacity-30 grayscale transition-all hover:opacity-100 hover:grayscale-0">
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" className="h-4" alt="Visa" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" className="h-6" alt="Mastercard" />
+              </div>
+            </div>
           </div>
+
         </div>
       </div>
     </div>
