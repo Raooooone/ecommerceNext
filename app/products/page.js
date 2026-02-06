@@ -9,16 +9,14 @@ export const metadata = {
 };
 
 export default async function ProductsPage() {
-  // Récupération simultanée des données (API + Base de données)
   const [apiProducts, dbProducts] = await Promise.all([
     getAllProducts(),
     prisma.product.findMany({
-      include: { category: true },
+      include: { category: true },//Joint les catégories
       orderBy: { id: 'desc' }
     })
   ]);
 
-  // Normalisation des données DB
   const formattedDbProducts = dbProducts.map((product) => ({
     ...product,
     displayId: `db-${product.id}`, 
@@ -26,7 +24,6 @@ export default async function ProductsPage() {
     source: 'db' 
   }));
 
-  // Normalisation des données API
   const formattedApiProducts = apiProducts.map((product) => ({
     ...product,
     displayId: product.id.toString(),
@@ -35,17 +32,25 @@ export default async function ProductsPage() {
   }));
 
   const allProducts = [...formattedDbProducts, ...formattedApiProducts];
+  
+  const totalCount = allProducts.length;
 
   return (
     <div className="min-h-screen bg-white py-24">
       <div className="container mx-auto px-6">
         
-        {/* --- SECTION HEADER SIMPLIFIÉE --- */}
+        {/* --- SECTION HEADER AVEC COMPTEUR --- */}
         <div className="mb-24 text-center">
           <h1 className="text-5xl md:text-8xl font-black tracking-tighter text-zinc-900">
             Découvrir nos <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-500">produits</span>
           </h1>
+          
           <div className="mt-6 h-1.5 w-24 bg-indigo-600 mx-auto rounded-full" />
+          
+          {/* 👇 AJOUT DU COMPTEUR ICI */}
+          <p className="mt-6 text-zinc-500 font-medium text-lg">
+            Affichage de <span className="font-bold text-zinc-900">{totalCount}</span> produits
+          </p>
         </div>
 
         {/* --- GRILLE DE PRODUITS --- */}

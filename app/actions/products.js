@@ -38,8 +38,9 @@ export async function createProduct(formData) {
     })
 
   } catch (error) {
-    console.error("Erreur Create:", error)
-    redirect(`/error?message=${encodeURIComponent(error.message)}`)
+    console.error("Erreur Create:", error.message) //Capture toutes les erreurs (validation, Prisma, serveur)
+    // On ne redirige ici que si l'erreur n'est pas une redirection voulue par Next.js
+    redirect(`/error?message=${encodeURIComponent(error.message)}`) 
   }
 
   revalidatePath('/products/manage')
@@ -48,8 +49,10 @@ export async function createProduct(formData) {
 
 
 export async function updateProduct(formData) {
+  let productId;
   try {
     const id = parseInt(formData.get('id'))
+    productId = id;
     if (!id || isNaN(id)) {
       throw new Error("Identifiant du produit manquant ou invalide.")
     }
@@ -88,7 +91,7 @@ export async function updateProduct(formData) {
   }
 
   revalidatePath('/products/manage')
-  revalidatePath(`/products/${formData.get('id')}`) 
+  revalidatePath(`/products/${productId}`) 
   redirect('/products/manage')
 }
 
@@ -108,4 +111,5 @@ export async function deleteProduct(formData) {
   }
 
   revalidatePath('/products/manage')
+  // Optionnel : redirect('/products/manage') si vous voulez forcer un rafraîchissement complet
 }

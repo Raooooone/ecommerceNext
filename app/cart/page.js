@@ -38,7 +38,6 @@ export default function CartPage() {
     }
   };
 
-  // --- AFFICHAGE SUCCÈS CLAIR ---
   if (isSuccess) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center px-4">
@@ -46,7 +45,7 @@ export default function CartPage() {
             <div className="w-24 h-24 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center text-5xl mx-auto mb-8 shadow-sm">
               
             </div>
-            <h2 className="text-4xl font-black text-zinc-900 mb-4 tracking-tight">C'est en route !</h2>
+            <h2 className="text-4xl font-black text-zinc-900 mb-4 tracking-tight"></h2>
             <p className="text-zinc-500 font-medium leading-relaxed">
               Votre commande a été validée. Merci de faire partie de notre aventure.
             </p>
@@ -160,10 +159,7 @@ export default function CartPage() {
                 )}
               </button>
               
-              <div className="mt-10 flex items-center justify-center gap-6 opacity-30 grayscale transition-all hover:opacity-100 hover:grayscale-0">
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" className="h-4" alt="Visa" />
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" className="h-6" alt="Mastercard" />
-              </div>
+             
             </div>
           </div>
 

@@ -46,7 +46,7 @@ function ErrorContent() {
 
 export default function ErrorPage() {
   return (
-    <Suspense fallback={<div>Chargement de l'erreur...</div>}>
+    <Suspense fallback={<div>Chargement</div>}>
       <ErrorContent />
     </Suspense>
   )

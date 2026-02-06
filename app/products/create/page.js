@@ -6,16 +6,13 @@ export default async function CreateProductPage() {
   const categories = await prisma.category.findMany();
 
   return (
-    // 1. FOND NOIR PROFOND & SUBTIL
     <div className="min-h-screen bg-black text-white py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
       
-      {/* Effets de lumière blanche diffuse (Glows) */}
       <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-white/5 rounded-full blur-[100px] pointer-events-none"></div>
       <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-gray-800/20 rounded-full blur-[100px] pointer-events-none"></div>
 
       <div className="max-w-3xl mx-auto relative z-10">
         
-        {/* Navigation retour */}
         <div className="mb-8">
           <Link 
             href="/products/manage" 
@@ -30,7 +27,6 @@ export default async function CreateProductPage() {
           </Link>
         </div>
 
-        {/* 2. CARTE MINIMALISTE (Bordure fine blanche) */}
         <div className="bg-[#111] border border-white/10 rounded-3xl shadow-2xl overflow-hidden backdrop-blur-sm">
           
           <div className="px-8 pt-10 pb-6 border-b border-white/10">
@@ -42,10 +38,8 @@ export default async function CreateProductPage() {
 
           <form action={createProduct} className="p-8 space-y-8">
             
-            {/* --- SECTION 1 --- */}
             <div className="space-y-6">
               
-              {/* Titre */}
               <div className="group">
                 <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1 group-focus-within:text-white transition-colors">Nom du produit</label>
                 <input 
@@ -57,22 +51,19 @@ export default async function CreateProductPage() {
                 />
               </div>
 
-              {/* Grille Prix & Catégorie */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  {/* MODIFICATION ICI : € */}
                   <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Prix (€)</label>
                   <div className="relative group">
                     <input 
                       type="number" 
-                      step="0.01" // 2 décimales pour l'Euro
+                      step="0.01" 
                       name="price" 
                       required 
                       placeholder="0.00"
                       className="w-full pl-5 pr-14 py-4 rounded-xl bg-[#1a1a1a] border border-white/10 text-white placeholder-gray-600 focus:border-white focus:ring-1 focus:ring-white/50 focus:bg-[#222] transition-all outline-none font-mono text-lg" 
                     />
                     <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
-                      {/* Symbole € */}
                       <span className="text-white font-bold bg-white/10 px-3 py-1 rounded text-sm">€</span>
                     </div>
                   </div>
@@ -99,9 +90,7 @@ export default async function CreateProductPage() {
 
             <div className="border-t border-white/10"></div>
 
-            {/* --- SECTION 2 --- */}
             <div className="space-y-6">
-              {/* Image URL */}
               <div>
                 <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Image du produit</label>
                 <div className="flex rounded-xl overflow-hidden border border-white/10 bg-[#1a1a1a] focus-within:border-white focus-within:ring-1 focus-within:ring-white/50 transition-all">
@@ -118,7 +107,6 @@ export default async function CreateProductPage() {
                 </div>
               </div>
 
-              {/* Description */}
               <div>
                 <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Description</label>
                 <textarea 
@@ -131,7 +119,6 @@ export default async function CreateProductPage() {
               </div>
             </div>
 
-            {/* BOUTON BLANC (CONTRASTE FORT) */}
             <div className="pt-6">
               <button 
                 type="submit" 
